@@ -93,6 +93,7 @@ public class DailyRunnerDaemon
         startTime.set(Calendar.HOUR_OF_DAY, 10);
         startTime.set(Calendar.MINUTE, 0);
         startTime.set(Calendar.SECOND, 0);
+        // remember to reset the timer to 10:00:00 after testing
 
         if(startTime.before(now) || startTime.equals(now))
         {
@@ -102,5 +103,6 @@ public class DailyRunnerDaemon
     }
 
 }
+
 
 }

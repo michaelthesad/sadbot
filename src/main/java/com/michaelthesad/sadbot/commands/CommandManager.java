@@ -1,5 +1,6 @@
 package com.michaelthesad.sadbot.commands;
 
+import com.michaelthesad.sadbot.tasks.DailyTopic;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -18,6 +19,12 @@ public class CommandManager extends ListenerAdapter {
             //command /introduce
             event.reply("Hello, I'm sadbot! I don't do anything yet, but I will soon!").queue();
         }
+        if (command.equals("force")) {
+            //command /force
+            //the event.reply here will go away eventually ;)
+            event.reply("The function is performing as expected... Good job! :)").queue();
+            new DailyTopic().run();
+        }
     }
 
     // Guild command
@@ -26,6 +33,7 @@ public class CommandManager extends ListenerAdapter {
     public void onGuildReady(GuildReadyEvent event) {
         List<CommandData> commandData = new ArrayList<>();
         commandData.add(Commands.slash("introduce", "sadbot will introduce itself"));
+        commandData.add(Commands.slash("force", "forces the bot to run the test command"));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 
@@ -33,6 +41,7 @@ public class CommandManager extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         List<CommandData> commandData = new ArrayList<>();
         commandData.add(Commands.slash("introduce", "sadbot will introduce itself"));
+        commandData.add(Commands.slash("force", "forces the bot to run the test command"));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 }

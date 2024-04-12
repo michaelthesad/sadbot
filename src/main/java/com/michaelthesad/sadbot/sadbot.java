@@ -8,10 +8,10 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.security.auth.login.LoginException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
+
 
 public class sadbot {
 
@@ -47,7 +47,7 @@ public class sadbot {
         }
     }
 
-    //I have no flipping clue what is going on here but anything below this point is gonna be timer related testing
+    //Timer related stuff here
 public void givenUsingTimer_whenSchedulingDailyTask_thenCorrect() {
     TimerTask repeatedTask = new TimerTask() {
         public void run() {
@@ -104,5 +104,13 @@ public class DailyRunnerDaemon
 
 }
 
+public static String getTopicList() {
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(topicList.size());
+        String randomElement = topicList.get(randomIndex);
+        topicList.remove(randomIndex);
+
+        return String.valueOf(randomElement);
+}
 
 }

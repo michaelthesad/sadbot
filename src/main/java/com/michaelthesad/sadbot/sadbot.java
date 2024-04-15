@@ -1,6 +1,7 @@
 package com.michaelthesad.sadbot;
 
 import com.michaelthesad.sadbot.commands.CommandManager;
+import com.michaelthesad.sadbot.tasks.DailyTopic;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -17,18 +18,43 @@ public class sadbot {
 
     private final Dotenv config;
 
-    private final ShardManager shardManager;
+    public static ShardManager shardManager;
 
+    private static final ArrayList<String> topicList = new ArrayList<String>();
+
+    public static String topicChannel;
+    public static String server;
+
+
+    //This handles connecting to Discord
     public sadbot() throws LoginException {
         config = Dotenv.configure().load();
         String token = config.get("TOKEN");
 
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.customStatus("Please be patient... I was only born yesterday."));
+        //the discord status is the quotes on this line (will have a random list eventually also)
+        builder.setActivity(Activity.customStatus("Starting conversations!"));
         shardManager = builder.build();
 
         shardManager.addEventListener(new CommandManager());
+        new DailyRunnerDaemon(new DailyTopic(), "DailyTopicThread").start();
+        loadTopicList();
+
+        topicChannel = config.get("topicchannel");
+        server = config.get("SERVER");
+    }
+
+    //This makes sure the topic list works
+    private void loadTopicList() {
+        String fileName = "topiclist.txt";
+        try (Scanner scan = new Scanner(new File(fileName))){
+            while (scan.hasNext())
+                topicList.add(scan.nextLine());
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public Dotenv getConfig() {
@@ -41,7 +67,7 @@ public class sadbot {
 
     public static void main(String[] args) {
         try {
-            sadbot bot = new sadbot();
+            new sadbot();
         } catch (LoginException e) {
             System.out.println("ERROR: Provided bot token is invalid.");
         }
@@ -104,6 +130,7 @@ public class DailyRunnerDaemon
 
 }
 
+// randomizer
 public static String getTopicList() {
         Random rand = new Random();
         int randomIndex = rand.nextInt(topicList.size());

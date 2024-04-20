@@ -18,7 +18,7 @@ public class CommandManager extends ListenerAdapter {
         String command = event.getName();
         if (command.equals("introduce")) {
             //command /introduce
-            event.reply("Hello, I'm sadbot! Every day I will share a new topic for everyone to talk about!").queue();
+            event.reply("Hello, I'm sadbot! Every day I will share a new topic for everyone to talk about! If you have any suggestions for future topics feel free to message them to michaelthesad!").queue();
         }
         if (command.equals("newtopic")) {
             //command /newtopic

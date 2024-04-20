@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.michaelthesad.sadbot"
-version = "0.5.1-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()

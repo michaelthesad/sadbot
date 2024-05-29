@@ -2,6 +2,7 @@ package com.michaelthesad.sadbot;
 
 import com.michaelthesad.sadbot.commands.CommandManager;
 import com.michaelthesad.sadbot.tasks.DailyTopic;
+import com.michaelthesad.sadbot.tasks.NewStatus;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -22,19 +23,46 @@ public class sadbot {
 
     private static final ArrayList<String> topicList = new ArrayList<String>();
 
+    private static final ArrayList<String> statusList = new ArrayList<String>();
+
     public static String topicChannel;
     public static String server;
 
+    //status stuff has to load first...
+    private void loadStatusList() {
+        String fileName = "statuslist.txt";
+        try (Scanner scan = new Scanner(new File(fileName))){
+            while (scan.hasNext())
+                statusList.add(scan.nextLine());
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getStatusList() {
+        Random rand = new Random();
+        //something about nextInt is ruining my life...
+        int randomIndex = rand.nextInt(statusList.size());
+        String randomElement = statusList.get(randomIndex);
+
+        return String.valueOf(randomElement);
+    }
 
     //This handles connecting to Discord
     public sadbot() throws LoginException {
         config = Dotenv.configure().load();
         String token = config.get("TOKEN");
 
+        loadStatusList();
+        getStatusList();
+        new NewStatus();
+        String status = getStatusList();
+
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
         builder.setStatus(OnlineStatus.ONLINE);
         //the discord status is the quotes on this line (will have a random list eventually also)
-        builder.setActivity(Activity.customStatus("Starting conversations!"));
+        builder.setActivity(Activity.customStatus(status));
         shardManager = builder.build();
 
         shardManager.addEventListener(new CommandManager());

@@ -1,6 +1,7 @@
 package com.michaelthesad.sadbot.commands;
 
 import com.michaelthesad.sadbot.sadbot;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -11,6 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.michaelthesad.sadbot.sadbot.shardManager;
 
 public class CommandManager extends ListenerAdapter {
     @Override
@@ -29,6 +32,14 @@ public class CommandManager extends ListenerAdapter {
             java.util.Date date= new java.util.Date();
             System.out.println("^" + new Timestamp(date.getTime()));
         }
+        if (command.equals("newstatus")) {
+            //command /newstatus
+            String randomStatus = sadbot.getStatusList();
+            System.out.println("Status changed to:");
+            System.out.println(randomStatus);
+            shardManager.setActivity(Activity.customStatus(randomStatus));
+            event.reply("The activity has been updated!").setEphemeral(true).queue();
+        }
     }
 
     // Guild command
@@ -38,6 +49,7 @@ public class CommandManager extends ListenerAdapter {
         List<CommandData> commandData = new ArrayList<>();
         commandData.add(Commands.slash("introduce", "sadbot will introduce itself"));
         commandData.add(Commands.slash("newtopic", "forces the bot to pull a new topic"));
+        commandData.add(Commands.slash("newstatus", "sadbot will have a new status if you use this"));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 
@@ -46,6 +58,7 @@ public class CommandManager extends ListenerAdapter {
         List<CommandData> commandData = new ArrayList<>();
         commandData.add(Commands.slash("introduce", "sadbot will introduce itself"));
         commandData.add(Commands.slash("newtopic", "forces the bot to pull a new topic"));
+        commandData.add(Commands.slash("newstatus", "sadbot will have a new status if you use this"));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 }

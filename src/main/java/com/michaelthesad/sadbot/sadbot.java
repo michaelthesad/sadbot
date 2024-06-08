@@ -17,7 +17,7 @@ import java.util.*;
 
 public class sadbot {
 
-    private final Dotenv config;
+    public final Dotenv config;
 
     public static ShardManager shardManager;
 
@@ -61,7 +61,7 @@ public class sadbot {
 
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
         builder.setStatus(OnlineStatus.ONLINE);
-        //the discord status is the quotes on this line (will have a random list eventually also)
+        //the discord status ("activity") is the quotes on this line
         builder.setActivity(Activity.customStatus(status));
         shardManager = builder.build();
 

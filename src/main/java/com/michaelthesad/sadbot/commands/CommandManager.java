@@ -30,50 +30,79 @@ public class CommandManager extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        Dotenv config = Dotenv.configure().load();
         String command = event.getName();
         String author = String.valueOf(event.getUser());
+        String admin = config.get("adminid");
         if (command.equals("introduce")) {
-            //command /introduce
-            event.reply("Hello, I'm sadbot! Every day I will share a new topic for everyone to talk about! If you have any suggestions for future topics feel free to message them to michaelthesad!").queue();
+            //admin command /introduce
+            if (author.equalsIgnoreCase(admin)) {
+                event.reply("Hello, I'm sadbot! Every day I will share a new topic for everyone to talk about! " +
+                        "If you have any suggestions for future topics submit them using `/suggest`!").queue();
+            }
+            else {
+                event.reply(":no_entry_sign: PERMISSION DENIED :no_entry_sign:").setEphemeral(true).queue();
+            }
         }
         if (command.equals("newtopic")) {
-            //command /newtopic
-            String randomTopic = sadbot.getTopicList();
-            event.reply(randomTopic).queue();
-            out.println(randomTopic);
-            Date date = new Date();
-            out.println("^" + new Timestamp(date.getTime()));
+            //admin command /newtopic
+            /* eventually I'll add a newtopic command that doesn't explicitly remove a topic
+            from the list or un-admin when each server has its own exclusion list */
+            if (author.equalsIgnoreCase(admin)) {
+                String randomTopic = sadbot.getTopicList();
+                event.reply(randomTopic).queue();
+                out.println(randomTopic);
+                Date date = new Date();
+                out.println("^" + new Timestamp(date.getTime()));
+            }
+            else {
+                event.reply(":no_entry_sign: PERMISSION DENIED :no_entry_sign:").setEphemeral(true).queue();
+            }
         }
         if (command.equals("newstatus")) {
-            //command /newstatus
-            String randomStatus = sadbot.getStatusList();
-            out.println("Status changed to:");
-            out.println(randomStatus);
-            shardManager.setActivity(Activity.customStatus(randomStatus));
-            event.reply("The activity has been updated via random selection!").setEphemeral(true).queue();
+            //admin command /newstatus
+            if (author.equalsIgnoreCase(admin)) {
+                String randomStatus = sadbot.getStatusList();
+                out.println("Status changed to: "+randomStatus);
+                shardManager.setActivity(Activity.customStatus(randomStatus));
+                event.reply("The activity has been updated via random selection!").setEphemeral(true).queue();
+            }
+            else {
+                event.reply(":no_entry_sign: PERMISSION DENIED :no_entry_sign:").setEphemeral(true).queue();
+            }
         }
         else if (command.equals("say")) {
-            //command /say <message>
-            OptionMapping messageOption = event.getOption("message");
-            assert messageOption != null;
-            String message = messageOption.getAsString();
-            event.getChannel().sendMessage(message).queue();
-            event.reply("Message sent!").setEphemeral(true).queue();
+            //admin command /say <message>
+            if (author.equalsIgnoreCase(admin)) {
+                OptionMapping messageOption = event.getOption("message");
+                assert messageOption != null;
+                String message = messageOption.getAsString();
+                event.getChannel().sendMessage(message).queue();
+                event.reply("Message sent!").setEphemeral(true).queue();
+            }
+            else {
+                event.reply(":no_entry_sign: PERMISSION DENIED :no_entry_sign:").setEphemeral(true).queue();
+            }
         }
         if (command.equals("setstatus")) {
-            //command /setstatus <message>
-            OptionMapping messageOption = event.getOption("message");
-            assert messageOption != null;
-            String message = messageOption.getAsString();
-            shardManager.setActivity(Activity.customStatus(message));
-            event.reply("The activity has been updated via your request!").setEphemeral(true).queue();
+            //admin command /setstatus <message>
+            if (author.equalsIgnoreCase(admin)) {
+                OptionMapping messageOption = event.getOption("message");
+                assert messageOption != null;
+                String message = messageOption.getAsString();
+                shardManager.setActivity(Activity.customStatus(message));
+                event.reply("The activity has been updated via your request!").setEphemeral(true).queue();
+            }
+            else {
+                event.reply(":no_entry_sign: PERMISSION DENIED :no_entry_sign:").setEphemeral(true).queue();
+            }
         }
         if (command.equals("suggest")) {
             //command /suggest <message>
             OptionMapping suggestionOption = event.getOption("suggestion");
             assert suggestionOption != null;
             String message = suggestionOption.getAsString();
-            Dotenv config = Dotenv.configure().load();
+            //Dotenv config = Dotenv.configure().load();
             String topicsuggestions = config.get("suggestionsfp");
             new File(topicsuggestions);
             Path File = Path.of("suggestions.txt");
@@ -97,7 +126,7 @@ public class CommandManager extends ListenerAdapter {
         commandData.add(Commands.slash("newstatus", "sadbot will select a new status via the random list"));
         commandData.add(Commands.slash("say", "sadbot will repeat the entered text").addOptions(option1));
         commandData.add(Commands.slash("setstatus", "sadbot will have a new status").addOptions(option1));
-        commandData.add(Commands.slash("suggest", "suggest a new topic to be added!").addOptions(option2));
+        commandData.add(Commands.slash("suggest", "Suggest a new topic to be added!").addOptions(option2));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 
@@ -111,7 +140,7 @@ public class CommandManager extends ListenerAdapter {
         commandData.add(Commands.slash("newstatus", "sadbot will select a new status via the random list"));
         commandData.add(Commands.slash("say", "sadbot will repeat the entered text").addOptions(option1));
         commandData.add(Commands.slash("setstatus", "sadbot will have a new status").addOptions(option1));
-        commandData.add(Commands.slash("testwrite", "suggest a new topic to be added!").addOptions(option2));
+        commandData.add(Commands.slash("suggest", "Suggest a new topic to be added!").addOptions(option2));
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 }
